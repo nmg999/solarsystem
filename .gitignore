@@ -1,0 +1,5 @@
+# Local browser verification and texture originals; final assets are embedded in index.html.
+.browser-check*/
+.qa*
+.texture-source/
+.browser-cosmic/
