@@ -1,5 +1,9 @@
-# Local browser verification and texture originals; final assets are embedded in index.html.
+# Local browser verification and texture originals; final assets are embedded in solar_system.html.
 .browser-check*/
 .qa*
 .texture-source/
 .browser-cosmic/
+.venv/
+__pycache__/
+*.py[cod]
+db.sqlite3

@@ -1,0 +1,13 @@
+{% extends 'learning/base.html' %}
+{% block title %}Science Study | Study Hub{% endblock %}
+{% block content %}
+<p class="eyebrow">Explore and discover</p>
+<h1>Science Study</h1>
+<p class="intro">Welcome to our solar system! Meet the Sun, the eight planets, and the moons that travel with them. Start with a question: what makes each planet different?</p>
+<section class="card" aria-labelledby="solar-system" style="margin: 32px 0;">
+  <h2 id="solar-system">Our solar system</h2>
+  <p>The Sun is a star at the centre of our solar system. Eight planets orbit it, including Earth, our home. Gravity keeps these worlds travelling around the Sun.</p>
+  <p>Think about it: which planet would you like to learn about first?</p>
+</section>
+<a class="button" href="{% url 'learning:home' %}">Back to Study Hub</a>
+{% endblock %}
