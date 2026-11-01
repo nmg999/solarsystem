@@ -28,7 +28,13 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY') or secrets.token_urlsafe(50)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '[::1]', 'solarsystem-cyan.vercel.app']
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    '[::1]',
+    'solarsystem-cyan.vercel.app',
+    'solarsystem-p111.vercel.app',
+]
 
 
 # Application definition
