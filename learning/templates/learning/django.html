@@ -1,32 +1,25 @@
 {% extends 'learning/base.html' %}
-{% block title %}Django Study | Study Hub{% endblock %}
+{% block title %}Django Study · A guide to building the web{% endblock %}
 {% block content %}
 <style>
-  .lesson { margin: 24px 0; scroll-margin-top: 24px; }
-  .lesson p:last-child { margin-bottom: 0; }
-  .lesson pre { background: #14243b; color: #e2edf8; padding: 20px; border-radius: 10px; overflow-x: auto; line-height: 1.6; }
-  .lesson code { font-family: Consolas, monospace; }
-  .lesson-nav { display: flex; flex-wrap: wrap; gap: 10px 20px; margin: 24px 0; }
-  .lesson-nav a { color: #27634d; font-weight: 650; }
-  .example { border-left: 3px solid #70a78e; padding-left: 16px; }
-  .lesson summary { cursor: pointer; color: #27634d; }
-  .lesson summary h2 { display: inline; font-size: 1.2rem; }
-  .lesson summary:focus-visible, .lesson-actions button:focus-visible { outline: 3px solid #b97512; outline-offset: 6px; }
-  .lesson[open] summary { border-bottom: 1px solid #dce4ee; padding-bottom: 16px; }
-  .lesson-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-  .lesson-actions button { padding: 10px 16px; border: 1px solid #27634d; border-radius: 8px; background: white; color: #27634d; cursor: pointer; font: inherit; }
+:root{color-scheme:dark;--ink:#edf1f7;--muted:#a0afc3;--gold:#e6c58a;--line:#ffffff16;--panel:#0d1625}
+body{background:#060b14;color:var(--ink);font-family:system-ui,sans-serif}body>header{display:none}main{max-width:none;padding:0!important}button,input{font:inherit}button,a,input{touch-action:manipulation}button{cursor:pointer}a{color:var(--gold)}[hidden]{display:none!important}button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.study-nav{height:78px;padding:0 4vw;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:20px;background:#080e19}.study-logo{color:var(--ink);text-decoration:none;font-size:14px;letter-spacing:.18em;font-weight:750}.study-logo span{color:var(--gold)}.study-nav-links{display:flex;gap:24px;align-items:center}.study-nav a,.study-nav button{font-size:13px}.text-button{border:0;background:none;color:var(--muted);padding:8px}.study-kicker{color:var(--gold);font-size:11px;letter-spacing:.2em;text-transform:uppercase;font-weight:650}.study-welcome{position:relative;min-height:calc(100svh - 78px);padding:65px 7vw 35px;overflow:hidden;background:radial-gradient(ellipse at 80% 35%,#15253877,transparent 60%)}.hero-layout{display:grid;grid-template-columns:1.2fr 1fr;gap:30px;align-items:center;max-width:1240px;margin:auto}.study-welcome h1{font:normal clamp(44px,4vw,60px)/1.07 Georgia,serif;letter-spacing:-.04em;margin:20px 0 24px;max-width:680px}.study-welcome h1 em{color:var(--gold);font-weight:normal}.study-intro{color:var(--muted);font-size:16px;line-height:1.8;max-width:520px}.study-primary{display:inline-flex;align-items:center;gap:35px;background:var(--gold);color:#111827;border:0;border-radius:7px;padding:16px 24px;font-weight:700;font-size:13px;margin-top:18px}.hero-caption{color:#8b9bb2;font-size:12px;margin-top:18px}.orbit-art{height:330px;position:relative;display:grid;place-items:center;isolation:isolate}.orbit-art::before,.orbit-art::after{content:'';position:absolute;width:300px;height:300px;border:1px solid #bdcde522;border-radius:50%;transform:rotate(-25deg) scaleY(.55)}.orbit-art::after{width:410px;height:410px;transform:rotate(32deg) scaleY(.7)}.code-world{width:180px;height:180px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(circle at 30% 28%,#bde1d5,#4e9a8c 27%,#173e4e 62%,#09131e 82%);box-shadow:0 0 65px #5aa89030,inset -24px -16px 30px #0008;z-index:1;color:#d9f8ee;font:42px Consolas,monospace}.orbit-tag{position:absolute;z-index:2;background:#101c2c;border:1px solid #ffffff20;border-radius:6px;padding:8px 13px;font:11px Consolas,monospace;color:#c5d9dd}.orbit-tag:nth-of-type(2){top:35px;right:20px}.orbit-tag:nth-of-type(3){bottom:38px;left:5px}.orbit-tag:nth-of-type(4){bottom:30px;right:15px}.learning-path{max-width:1240px;margin:40px auto 0;border-top:1px solid var(--line);padding-top:26px}.path-heading{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:12px}.path-heading h2{font:22px Georgia,serif;color:var(--ink);margin:0}.category-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:18px}.category-card{text-align:left;border:1px solid var(--line);background:#101a2777;color:var(--ink);padding:20px;border-radius:10px;transition:border-color .2s,transform .2s}.category-card:hover{border-color:#e6c58a88;transform:translateY(-3px)}.category-card .number{color:var(--gold);font:11px Consolas,monospace}.category-card strong{display:block;font-size:14px;margin:10px 0 6px}.category-card small{display:block;color:var(--muted);line-height:1.6;font-size:12px}
+.study-library{height:calc(100dvh - 78px);display:grid;grid-template-columns:200px 300px minmax(0,1fr);animation:arrive .4s ease}.library-sidebar{min-width:0;padding:28px 18px;border-right:1px solid var(--line);background:#080f1b}.library-sidebar h2{font-size:10px;letter-spacing:.15em;color:#8191a8;margin:0 10px 18px}.category-filter{width:100%;text-align:left;padding:12px 10px;border:1px solid transparent;border-radius:7px;background:none;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;margin:3px 0}.category-filter[aria-pressed=true]{background:#e6c58a10;border-color:#e6c58a33;color:var(--gold)}.sidebar-note{border-top:1px solid var(--line);margin:26px 10px 0;padding-top:20px;font-size:11px;line-height:1.8;color:#7d8da5}.library-index{min-width:0;display:flex;flex-direction:column;min-height:0;border-right:1px solid var(--line);background:#0a1220}.search-wrap{padding:22px 18px 14px}.search-wrap label{font-size:12px;color:#b2bfd2;display:block;margin-bottom:9px}.search-box{display:flex;border:1px solid #ffffff26;border-radius:7px;background:#060d18;align-items:center}.search-box input{width:100%;min-width:0;background:transparent;border:0;color:var(--ink);padding:12px;font-size:12px}.search-box button{border:0;background:none;color:var(--gold);padding:7px 10px;font-size:16px}.result-count{font-size:11px;color:#899bb3;padding:0 18px 12px;margin:0}.topic-results{overflow-y:auto;padding:0 9px 14px;scrollbar-width:thin}.topic-button{width:100%;text-align:left;background:transparent;border:1px solid transparent;border-radius:7px;color:#c5d0df;padding:14px 12px;margin:2px 0}.topic-button[aria-current=true]{background:#162337;border-color:#ffffff1c;color:#fff}.topic-button strong{font-size:13px;display:block;font-weight:600}.topic-button small{display:block;color:#8193ad;font-size:11px;line-height:1.6;margin-top:5px}.no-results{padding:16px;font-size:13px;color:var(--muted)}.lesson-reader{overflow-y:auto;min-width:0;padding:35px clamp(22px,4vw,65px);scrollbar-width:thin;background:radial-gradient(ellipse at top right,#15283a33,transparent 65%)}.reader-top{display:flex;justify-content:space-between;gap:14px;align-items:center;margin-bottom:24px}.reader-top span{font-size:10px;letter-spacing:.12em;color:var(--gold);text-transform:uppercase}.reader-top a{font-size:11px;text-decoration:none}.lesson.card{padding:0;border:0;background:none;border-radius:0;margin:0}.lesson summary{list-style:none;pointer-events:none}.lesson summary::-webkit-details-marker{display:none}.lesson h2{font:normal clamp(27px,2.8vw,40px)/1.2 Georgia,serif;letter-spacing:-.025em;margin:0 0 25px}.lesson-body{color:#b4c2d5;font-size:14px;line-height:1.9}.lesson-body strong{color:#e1e9f4;font-weight:600}.lesson pre{white-space:pre;overflow:auto;background:#050c16;border:1px solid #ffffff15;border-radius:9px;padding:20px;color:#aad8cb;font:12px/1.9 Consolas,monospace;margin:22px 0}.lesson code{font-family:Consolas,monospace;font-size:.92em;color:#baddd6}.lesson .example{padding:18px 20px;border-left:2px solid #e6c58a88;border-radius:0 8px 8px 0;background:#e6c58a08;color:#d0c6b4}.reader-footer{border-top:1px solid var(--line);margin-top:30px;padding-top:18px;display:flex;justify-content:space-between;gap:20px}.reader-footer button{background:none;border:0;color:var(--gold);font-size:12px;padding:8px 0}.study-library .button{background:var(--gold);color:#101827;font-size:12px}.empty-reader{color:var(--muted);padding:30px 0}.study-library:focus{outline:none}@keyframes arrive{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media(min-width:1500px){.study-library{grid-template-columns:220px 340px minmax(0,1fr)}.lesson-reader{padding-right:max(65px,calc((100vw - 1450px)/2))}}
+@media(max-width:1000px){.study-library{grid-template-columns:160px 240px minmax(0,1fr)}.orbit-art{transform:scale(.8)}.study-welcome{padding:40px 5vw}.category-cards{gap:8px}.category-card{padding:15px}.study-nav-links{gap:12px}}
+@media(max-width:740px){.study-nav{height:65px;padding:0 14px;gap:8px}.study-nav-links{gap:8px}.study-nav-links a{font-size:11px}.study-logo{font-size:10px;letter-spacing:.12em}.hero-layout{grid-template-columns:1fr}.orbit-art{display:none}.study-welcome{min-height:calc(100svh - 65px);padding:38px 22px}.study-welcome h1{font-size:49px}.study-intro{font-size:14px}.category-cards{grid-template-columns:1fr 1fr}.learning-path{margin-top:30px}.path-heading>span{display:none}.study-library{height:auto;min-height:calc(100svh - 65px);grid-template-columns:1fr}.library-sidebar{min-width:0;padding:12px;border-right:0;border-bottom:1px solid var(--line)}.library-sidebar h2,.sidebar-note{display:none}#category-filters{display:flex;gap:6px;overflow:auto}.category-filter{width:auto;flex-shrink:0;gap:15px;padding:9px;font-size:11px}.library-index{border-right:0;border-bottom:1px solid var(--line)}.search-wrap{padding:15px 18px 8px}.topic-results{max-height:190px}.topic-button{padding:9px 12px}.topic-button small{display:none}.result-count{padding-bottom:6px}.lesson-reader{padding:25px 22px;overflow:visible}.lesson h2{font-size:29px}.lesson-body{font-size:14px}.reader-top{margin-bottom:18px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
-<p class="eyebrow">Your first steps in web development</p>
-<h1>Django Study</h1>
-<p class="intro">Discover how the pieces of a website fit together, using your own Study Hub and solar system as examples.</p>
-<p>Click a question to open its lesson. You can open several lessons at once, or use the topic links to jump straight to one.</p>
-<div class="lesson-actions"><button type="button" id="lessons-open">Show all lessons</button> <button type="button" id="lessons-close">Collapse all lessons</button></div>
-<nav class="lesson-nav" aria-label="Jump to a lesson">
-  <a href="#django">Django</a><a href="#html">HTML</a><a href="#css">CSS</a><a href="#javascript">JavaScript</a><a href="#database">Databases</a><a href="#api">APIs</a><a href="#models">models.py</a><a href="#views">views.py</a><a href="#urls">urls.py</a>
-  <a href="#venv">.venv</a><a href="#gitignore">.gitignore</a><a href="#requirements">requirements.txt</a>
-  <a href="#manage">manage.py</a><a href="#routing-folders">Project vs app URLs</a><a href="#init">__init__.py</a><a href="#settings">settings.py</a><a href="#migrations">Migrations</a>
-</nav>
-
+<nav class="study-nav" aria-label="Main navigation"><a class="study-logo" href="{% url 'learning:home' %}"><span>◈</span> STUDY HUB <span>/</span> DJANGO</a><div class="study-nav-links"><button class="text-button" id="study-home" type="button">Overview</button><a href="{% url 'learning:science' %}">Science ↗</a></div></nav>
+<section class="study-welcome" id="study-welcome" aria-labelledby="welcome-heading">
+ <div class="hero-layout"><div><p class="study-kicker">The web, one discovery at a time</p><h1 id="welcome-heading">Understand the code.<br><em>Build your curiosity.</em></h1><p class="study-intro">From your first HTML tag to Django's inner workings. Explore clear explanations, real project examples, and the files that bring your website to life.</p><button class="study-primary" id="study-start" type="button">Explore the learning library <span aria-hidden="true">↗</span></button><p class="hero-caption">18 focused lessons · 4 categories · Made for beginners</p></div><div class="orbit-art" aria-hidden="true"><div class="code-world">&lt;/&gt;</div><span class="orbit-tag">request → response</span><span class="orbit-tag">from curiosity import ideas</span><span class="orbit-tag">Django · Python · The web</span></div></div>
+ <div class="learning-path"><div class="path-heading"><h2>Choose your starting point</h2><span>Small lessons. A bigger picture.</span></div><div class="category-cards"><button class="category-card" data-category="foundations"><span class="number">01 / FOUNDATIONS</span><strong>The language of the web ↗</strong><small>HTML, CSS, JavaScript, and how the pieces connect.</small></button><button class="category-card" data-category="django"><span class="number">02 / DJANGO</span><strong>Inside your project ↗</strong><small>Understand views, routes, settings, and Python packages.</small></button><button class="category-card" data-category="data"><span class="number">03 / DATA</span><strong>Store it. Share it. ↗</strong><small>Databases, models, migrations, and APIs explained.</small></button><button class="category-card" data-category="setup"><span class="number">04 / YOUR TOOLKIT</span><strong>Ready to build ↗</strong><small>Environments, dependencies, Git, and useful commands.</small></button></div></div>
+</section>
+<section class="study-library" id="study-library" aria-label="Learning library" tabindex="-1" hidden>
+ <aside class="library-sidebar"><h2>YOUR LEARNING LIBRARY</h2><div id="category-filters" aria-label="Filter by category"></div><p class="sidebar-note">LEARN BY EXPLORING<br>Every lesson connects to your Study Hub or solar system project. Start anywhere. Follow your curiosity.</p></aside>
+ <div class="library-index"><div class="search-wrap"><label for="lesson-search">Find an explanation</label><div class="search-box"><input id="lesson-search" type="search" placeholder="Search topics, files, commands…" autocomplete="off"><button id="clear-search" type="button" aria-label="Clear search">×</button></div></div><p class="result-count" id="result-count" role="status"></p><div class="topic-results" id="topic-results"></div></div>
+ <div class="lesson-reader" id="lesson-reader"><div class="reader-top"><span id="reader-category">Learning library</span><a id="lesson-link" href="#django">Link to this lesson ↗</a></div><div id="empty-reader" class="empty-reader" hidden>No lessons match your search. Try another word or choose All topics.</div><div id="lesson-content">
 <details class="card lesson" id="django" aria-labelledby="django-heading" open>
   <summary><h2 id="django-heading">What does Django do?</h2></summary>
   <div class="lesson-body">
@@ -270,7 +263,7 @@ urlpatterns = [
 </div>
 </details>
 
-<details class="card lesson" aria-labelledby="together-heading">
+<details class="card lesson" id="together" aria-labelledby="together-heading">
   <summary><h2 id="together-heading">How they work together</h2></summary>
   <div class="lesson-body">
   <p>Your browser requests a page. Django handles the request and can read information from a database. It sends back HTML, which the browser displays with CSS styling. JavaScript then responds to your actions and can request more data through a web API.</p>
@@ -278,22 +271,64 @@ urlpatterns = [
   <a class="button" href="{% url 'learning:science' %}">Explore the Science example</a>
 </div>
 </details>
-<a class="button" href="{% url 'learning:home' %}">Back to Study Hub</a>
+</div><div class="reader-footer" id="reader-footer"><button id="previous-lesson" type="button">← Previous lesson</button><button id="next-lesson" type="button">Next lesson →</button></div></div>
+</section>
+<noscript><p style="padding:24px">This learning library uses JavaScript for search and topic navigation. Enable JavaScript to browse the lessons interactively.</p></noscript>
 <script>
 (() => {
-  const lessons = [...document.querySelectorAll('details.lesson')];
-  document.getElementById('lessons-open').onclick = () => lessons.forEach(lesson => { lesson.open = true; });
-  document.getElementById('lessons-close').onclick = () => lessons.forEach(lesson => { lesson.open = false; });
-  function openTopic() {
-    const lesson = lessons.find(item => item.id && '#' + item.id === location.hash);
-    if (lesson) { lesson.open = true; lesson.scrollIntoView({block: 'start'}); }
-  }
-  document.querySelectorAll('.lesson-nav a').forEach(link => link.addEventListener('click', () => {
-    const lesson = lessons.find(item => '#' + item.id === link.hash);
-    if (lesson) lesson.open = true;
-  }));
-  addEventListener('hashchange', openTopic);
-  openTopic();
+ const $=id=>document.getElementById(id),lessons=[...document.querySelectorAll('.lesson')];
+ const categories=[['all','All topics'],['foundations','Web foundations'],['django','Django project'],['data','Data & APIs'],['setup','Project setup']];
+ const metadata={
+  django:['django','Django','The framework behind your website.'],
+  html:['foundations','HTML','Give your page content and structure.'],
+  css:['foundations','CSS','Shape the colours, spacing, and layout.'],
+  javascript:['foundations','JavaScript','Make your website respond and move.'],
+  database:['data','Databases','Store information for another day.'],
+  api:['data','APIs','How software asks for and shares data.'],
+  models:['data','models.py','Describe the records your app stores.'],
+  views:['django','views.py','Turn a browser request into a response.'],
+  urls:['django','urls.py','Connect an address to the right view.'],
+  venv:['setup','.venv','A separate home for Python packages.'],
+  gitignore:['setup','.gitignore','Choose what stays out of Git commits.'],
+  requirements:['setup','requirements.txt','Record the packages your project needs.'],
+  manage:['setup','manage.py','Run your project from the terminal.'],
+  'routing-folders':['django','Project vs app URLs','Understand the two layers of routing.'],
+  init:['django','__init__.py','Why Python folders become packages.'],
+  settings:['django','settings.py','Configure how your Django site works.'],
+  migrations:['data','Migrations','Keep database changes in step with code.'],
+  together:['foundations','The bigger picture','Follow a request through your website.']
+ };
+ let category='all',selected='django',matches=[];
+ const label=key=>categories.find(c=>c[0]===key)[1];
+ lessons.forEach(lesson=>{lesson.hidden=true;lesson.open=true;lesson.querySelector('summary').addEventListener('click',e=>e.preventDefault());});
+ function enter(nextCategory='all'){$('study-welcome').hidden=true;$('study-library').hidden=false;category=nextCategory;$('lesson-search').value='';render();$('study-library').focus();window.scrollTo(0,0)}
+ function select(id,focus=false){
+  selected=id;lessons.forEach(lesson=>{lesson.hidden=lesson.id!==id;lesson.open=true;});
+  const meta=metadata[id];$('reader-category').textContent=label(meta[0])+' / '+(Math.max(1,matches.findIndex(x=>x.id===id)+1))+' of '+matches.length;
+  $('lesson-link').href='#'+id;history.replaceState(null,'','#'+id);
+  document.querySelectorAll('.topic-button').forEach(button=>button.setAttribute('aria-current',String(button.dataset.lesson===id)));
+  $('lesson-reader').scrollTop=0;
+  $('previous-lesson').disabled=matches.findIndex(x=>x.id===id)<=0;$('next-lesson').disabled=matches.findIndex(x=>x.id===id)>=matches.length-1;
+  if(focus){const title=document.getElementById(id).querySelector('h2');title.tabIndex=-1;title.focus({preventScroll:true});if(innerWidth<=740)$('lesson-reader').scrollIntoView({block:'start'});}
+ }
+ function render(){
+  const query=$('lesson-search').value.trim().toLowerCase(),terms=query.split(/\s+/).filter(Boolean);
+  matches=lessons.filter(lesson=>{const meta=metadata[lesson.id],haystack=(meta.join(' ')+' '+lesson.textContent).toLowerCase();return (category==='all'||meta[0]===category)&&terms.every(term=>haystack.includes(term));});
+  $('topic-results').replaceChildren();
+  matches.forEach(lesson=>{const meta=metadata[lesson.id],button=document.createElement('button');button.type='button';button.className='topic-button';button.dataset.lesson=lesson.id;const title=document.createElement('strong'),caption=document.createElement('small');title.textContent=meta[1];caption.textContent=meta[2];button.append(title,caption);button.onclick=()=>select(lesson.id,true);$('topic-results').append(button);});
+  $('result-count').textContent=matches.length+' '+(matches.length===1?'lesson':'lessons')+(query?' matching your search':' · '+label(category));
+  document.querySelectorAll('.category-filter').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.category===category)));
+  $('empty-reader').hidden=matches.length>0;$('reader-footer').hidden=!matches.length;$('lesson-link').hidden=!matches.length;
+  if(matches.length){select(matches.some(x=>x.id===selected)?selected:matches[0].id)}else{lessons.forEach(l=>l.hidden=true);$('reader-category').textContent='No matching topics';}
+ }
+ categories.forEach(([key,name])=>{const b=document.createElement('button');b.type='button';b.className='category-filter';b.dataset.category=key;const title=document.createElement('span'),count=document.createElement('span');title.textContent=name;count.textContent=key==='all'?lessons.length:lessons.filter(l=>metadata[l.id][0]===key).length;b.append(title,count);b.onclick=()=>{category=key;render()};$('category-filters').append(b);});
+ $('study-start').onclick=()=>enter();document.querySelectorAll('.category-card').forEach(b=>b.onclick=()=>enter(b.dataset.category));
+ $('study-home').onclick=()=>{$('study-welcome').hidden=false;$('study-library').hidden=true;history.replaceState(null,'',location.pathname);$('study-start').focus();window.scrollTo(0,0)};
+ $('lesson-search').addEventListener('input',render);$('clear-search').onclick=()=>{$('lesson-search').value='';render();$('lesson-search').focus()};
+ $('previous-lesson').onclick=()=>{const i=matches.findIndex(l=>l.id===selected);if(i>0)select(matches[i-1].id,true)};
+ $('next-lesson').onclick=()=>{const i=matches.findIndex(l=>l.id===selected);if(i<matches.length-1)select(matches[i+1].id,true)};
+ function openHash(){const id=location.hash.slice(1);if(metadata[id]){selected=id;enter();}}
+ addEventListener('hashchange',openHash);if(metadata[location.hash.slice(1)])openHash();
 })();
 </script>
 {% endblock %}
