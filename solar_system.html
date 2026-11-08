@@ -342,6 +342,7 @@ canvas.addEventListener('pointerup',e=>{const start=systemClickStart;systemClick
 <button id="timeLaunch" type="button">Time travel ↗</button>
 <dialog id="timeLab" aria-labelledby="timeHeading">
  <header><div><span class="eyebrow">A journey through deep time</span><h2 id="timeHeading">Solar system time machine</h2></div><button id="timeClose" type="button">Back to explorer</button></header>
+ <div class="time-row" style="padding:0 24px" aria-label="Cinematic controls"><button id="timeCinema" type="button">Play cinematic tour</button><button id="timeReplay" type="button" disabled>Replay last scene</button><button id="timeFreeze" type="button" aria-pressed="false">Freeze frame</button><button id="timeWide" type="button">Wide view</button><label for="timeMotion" style="margin:0">Effects speed <select id="timeMotion"><option value="1">Normal · 1×</option><option value="0.25">Slow motion · ¼×</option><option value="0.1">Ultra slow · ¹⁄₁₀×</option></select></label></div>
  <div class="time-grid">
   <div class="time-stage"><canvas id="timeCanvas" aria-label="Illustration of the solar system at the selected time. Choose a planet using the buttons below."></canvas><div id="timeLive"><span id="timePhase"></span><br><span class="time-note">Illustration · sizes, distances and orbital motion compressed</span></div></div>
   <aside>
@@ -367,9 +368,34 @@ canvas.addEventListener('pointerup',e=>{const start=systemClickStart;systemClick
  const el=id=>document.getElementById(id), lab=el('timeLab'), canvas=el('timeCanvas'), g=canvas.getContext('2d');
  const names=['Sun','Mercury','Venus','Earth','Mars','Jupiter','Saturn','Uranus','Neptune'];
  const colors=['#ffd079','#aaa49c','#e9bb72','#6dafff','#cf7757','#d9b497','#dbc799','#98dadb','#5f8ee8'];
- const state={year:0,playing:false,world:3,size:1,distance:0,civ:0,blast:-1,exploded:false,clock:0};
+ const state={year:0,playing:false,world:3,size:1,distance:0,civ:0,blast:-1,exploded:false,clock:0,freeze:false,focus:false,scene:null,sceneTime:0,lastScene:null};
  const reduced=matchMedia('(prefers-reduced-motion: reduce)').matches;
- let frame=0,last=0,width=1,height=1,points=[];
+ let frame=0,last=0,width=1,height=1,points=[],camera={x:0,y:0,zoom:1},sceneSnapshot=null;
+ const dust=Array.from({length:220},(_,i)=>({angle:i*2.399963,speed:45+(i*73%211),size:.7+(i*31%30)/10,depth:.3+(i*17%70)/100}));
+ const timeSprites=sprites.map(source=>{const copy=document.createElement('canvas');copy.width=source.width;copy.height=source.height;copy.getContext('2d').drawImage(source,0,0);return copy});let textureRefresh=0;
+ function startScene(kind){
+  if(!state.scene)sceneSnapshot={year:state.year,world:state.world,clock:state.clock};
+  Object.assign(state,{scene:kind,lastScene:kind,sceneTime:0,freeze:false,playing:false,distance:0,focus:false,exploded:kind==='blast',blast:kind==='blast'&&!reduced?0:-1});
+  el('timeDistance').value=0;el('timeDistanceValue').textContent='Solar system view';el('timeReplay').disabled=false;el('timeFreeze').textContent='Freeze frame';el('timeFreeze').setAttribute('aria-pressed','false');
+  el('timeEvent').textContent=kind==='blast'?'Fictional supernova scene · a stylized effect, not the Sun’s future.':'Cinematic tour · present-day texture maps illustrate simplified future stages.';update();
+ }
+ function stopScene(){state.scene=null;state.sceneTime=0;}
+ function glow(x,y,r,color,strength=1){g.save();g.globalCompositeOperation='screen';const h=g.createRadialGradient(x,y,r*.2,x,y,r);h.addColorStop(0,color+Math.round(110*strength).toString(16).padStart(2,'0'));h.addColorStop(.32,color+'35');h.addColorStop(1,color+'00');g.fillStyle=h;g.fillRect(x-r,y-r,r*2,r*2);g.restore()}
+ function planet(x,y,r,i){
+  if(i===6||i===7){g.save();g.translate(x,y);g.rotate(-.25);g.strokeStyle=i===6?'#cfb88f88':'#a5e1e055';for(let k=0;k<12;k++){g.lineWidth=Math.max(.5,r*.018);g.beginPath();g.ellipse(0,0,r*(1.34+k*.045),r*(.36+k*.012),0,Math.PI,Math.PI*2);g.stroke()}g.restore()}
+  g.drawImage(timeSprites[i],x-r,y-r,r*2,r*2);
+  if(i===3&&state.year>=1){g.save();g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.clip();g.fillStyle=`rgba(183,70,22,${Math.min(.65,(state.year-1)*.12+.12)})`;g.fillRect(x-r,y-r,r*2,r*2);g.restore()}
+  if([2,3,5,7,8].includes(i)){g.save();g.strokeStyle=colors[i]+'66';g.shadowColor=colors[i];g.shadowBlur=r*.23;g.lineWidth=Math.max(.7,r*.025);g.beginPath();g.arc(x,y,r,0,Math.PI*2);g.stroke();g.restore()}
+  if(i===6||i===7){g.save();g.translate(x,y);g.rotate(-.25);for(let k=0;k<14;k++){g.strokeStyle=k%3?'#d4c6a9aa':'#8e785b88';g.lineWidth=Math.max(.5,r*.025);g.beginPath();g.ellipse(0,0,r*(1.34+k*.04),r*(.36+k*.011),0,0,Math.PI);g.stroke()}g.restore()}
+ }
+ function explosion(t,cx,cy,scale){
+  const fade=Math.max(0,1-t/10),front=(12+Math.pow(t,.72)*110)*scale;
+  glow(cx,cy,Math.max(30,front*1.3),'#f45124',fade);glow(cx,cy,Math.max(20,90-t*7)*scale,'#b5e7ff',fade);
+  g.save();g.globalCompositeOperation='screen';
+  for(let k=0;k<3;k++){g.strokeStyle=['#beeaff','#ffb86b','#c65bba'][k]+Math.round(fade*(95-k*18)).toString(16).padStart(2,'0');g.lineWidth=(3+k*5)*scale;g.beginPath();g.ellipse(cx,cy,front*(1+k*.12),front*(.38+k*.12),-.2,0,Math.PI*2);g.stroke()}
+  for(const p of dust){const rr=p.speed*(1-Math.exp(-t*.32))*3*scale,x=cx+Math.cos(p.angle)*rr,y=cy+Math.sin(p.angle)*rr*p.depth;g.strokeStyle=`rgba(255,${Math.floor(110+p.depth*130)},${Math.floor(60+p.depth*180)},${fade*.65})`;g.lineWidth=p.size*scale*.5;g.beginPath();g.moveTo(x-Math.cos(p.angle)*p.size*7,y-Math.sin(p.angle)*p.size*4);g.lineTo(x,y);g.stroke();if(p.size>2.5)glow(x,y,p.size*5*scale,'#e6773d',fade*.5)}
+  g.restore();
+ }
  const smooth=t=>{t=Math.max(0,Math.min(1,t));return t*t*(3-2*t)};
  function model(year){
   if(year < -4.5) return {phase:'Birth · gas and dust',radius:12,heat:0,story:'A young Sun gathers from a collapsing cloud. Planets are still assembling; their appearance here is symbolic.'};
@@ -398,34 +424,42 @@ canvas.addEventListener('pointerup',e=>{const start=systemClickStart;systemClick
   el('timePlanets').querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',String(i===state.world)));
   el('timePlay').textContent=state.playing?'Pause timeline':'Play timeline'; el('timePlay').setAttribute('aria-pressed',String(state.playing));
  }
- names.forEach((name,i)=>{const b=document.createElement('button');b.type='button';b.textContent=name;b.onclick=()=>{state.world=i;update()};el('timePlanets').append(b)});
+ names.forEach((name,i)=>{const b=document.createElement('button');b.type='button';b.textContent=name;b.onclick=()=>{stopScene();state.world=i;state.focus=true;update()};el('timePlanets').append(b)});
  function resize(){const box=canvas.getBoundingClientRect();width=box.width;height=box.height;const d=Math.min(devicePixelRatio||1,2);canvas.width=Math.round(width*d);canvas.height=Math.round(height*d);g.setTransform(d,0,0,d,0,0)}
  function draw(now){
-  if(!lab.open){frame=0;return}const dt=Math.min((now-last)/1000||0,.05);last=now;if(!reduced)state.clock+=dt;
+  if(!lab.open){frame=0;return}const wallDt=Math.min((now-last)/1000||0,.05);last=now;const dt=state.freeze?0:wallDt*Number(el('timeMotion').value);if(!reduced)state.clock+=dt;
+  if(state.scene){state.sceneTime+=dt;const t=state.sceneTime;if(state.scene==='tour'){if(t<5){state.world=3;state.year=0;state.focus=true}else if(t<10){state.world=6;state.year=0;state.focus=true}else if(t<16){state.world=0;state.year=4.5+(t-10)/6*2;state.focus=false}else if(t<22){state.world=0;state.year=7+(t-16)/6;state.focus=true}else{stopScene();state.focus=false}}else if(t>10){stopScene()}update()}
+  if(!state.freeze&&!reduced&&now-textureRefresh>150){textureRefresh=now;sprites.forEach((source,i)=>{const copy=timeSprites[i];if(copy.width!==source.width)copy.width=copy.height=source.width;copy.getContext('2d').clearRect(0,0,copy.width,copy.height);copy.getContext('2d').drawImage(source,0,0)})}
   if(state.playing){state.year=Math.min(8,state.year+dt*Number(el('timeRate').value));if(state.year>=8)state.playing=false;update()}
   const m=model(state.year),cx=width/2,cy=height/2,scale=Math.min(width/760,height/480);
   g.fillStyle='#060c17';g.fillRect(0,0,width,height);
   for(let i=0;i<150;i++){const x=((Math.sin(i*127.1)*43758.5)%1+1)%1*width,y=((Math.sin(i*311.7)*23157.2)%1+1)%1*height;g.fillStyle=i%3?'#9db9df66':'#fff8';g.fillRect(x,y,1.5,1.5)}
+  const grow=state.year>=7?1+.6*smooth((state.year-7)/.5):1;
+  const focusAngle=state.clock*.2/Math.sqrt(Math.max(1,state.world))+state.world*1.7,focusR=(48+state.world*31)*scale*grow;
+  const focusX=state.world?Math.cos(focusAngle)*focusR:0,focusY=state.world?Math.sin(focusAngle)*focusR*.48:0;
+  const zoomTarget=state.focus&&state.distance===0?(state.world?4.2:2):1;
+  const ease=state.freeze?0:reduced?1:1-Math.exp(-wallDt*3);camera.x+=((state.focus&&state.distance===0?focusX:0)-camera.x)*ease;camera.y+=((state.focus&&state.distance===0?focusY:0)-camera.y)*ease;camera.zoom+=(zoomTarget-camera.zoom)*ease;
+  g.save();g.translate(cx,cy);g.scale(camera.zoom,camera.zoom);g.translate(-cx-camera.x,-cy-camera.y);
   points=[];
   if(state.distance>0){
    for(let i=0;i<45;i++){const x=(Math.sin(i*19.7)*.46+.5)*width,y=(Math.cos(i*7.3)*.43+.5)*height;g.save();g.translate(x,y);g.rotate(i);g.scale(1,.35);const halo=g.createRadialGradient(0,0,0,0,0,12+i%15);halo.addColorStop(0,'#fff4d5');halo.addColorStop(.2,'#a9bded88');halo.addColorStop(1,'#5179b000');g.fillStyle=halo;g.beginPath();g.arc(0,0,12+i%15,0,Math.PI*2);g.fill();g.restore()}
   }else{
-   const grow=state.year>=7?1+.6*smooth((state.year-7)/.5):1;
    for(let i=1;i<9;i++){
     const r=(48+i*31)*scale*grow,angle=state.clock*.2/Math.sqrt(i)+i*1.7;
-    g.strokeStyle='#7da4db30';g.beginPath();g.ellipse(cx,cy,r,r*.48,0,0,Math.PI*2);g.stroke();
+    g.lineWidth=.7/camera.zoom;g.strokeStyle='#7da4db30';g.beginPath();g.ellipse(cx,cy,r,r*.48,0,0,Math.PI*2);g.stroke();
     if(state.year>=6.2&&i<=2)continue;
-    const x=cx+Math.cos(angle)*r,y=cy+Math.sin(angle)*r*.48,pr=(i>=5?9:5)*scale;
-    g.fillStyle=i===3&&state.year>=1?'#a97c54':colors[i];g.beginPath();g.arc(x,y,Math.max(2,pr),0,Math.PI*2);g.fill();
-    if(i===6){g.strokeStyle='#dbc799aa';g.beginPath();g.ellipse(x,y,pr*1.8,pr*.5,-.3,0,Math.PI*2);g.stroke()}
-    if(i===state.world){g.strokeStyle='#fff';g.beginPath();g.arc(x,y,pr+5,0,Math.PI*2);g.stroke()}
-    g.fillStyle='#b7c9df';g.font='11px Arial';g.textAlign='center';g.fillText(names[i],x,y+pr+16);points.push({x,y,i});
+    const x=cx+Math.cos(angle)*r,y=cy+Math.sin(angle)*r*.48,pr=([0,5,8,9,6,20,17,12,12][i])*scale;
+    planet(x,y,Math.max(2,pr),i);
+    if(i===state.world){g.lineWidth=1/camera.zoom;g.strokeStyle='#dfedff80';g.beginPath();g.arc(x,y,pr+5/camera.zoom,0,Math.PI*2);g.stroke()}
+    g.fillStyle='#b7c9df';g.font=`${11/camera.zoom}px Arial`;g.textAlign='center';g.fillText(names[i],x,y+pr+16/camera.zoom);points.push({x,y,i});
    }
    if(state.year>=7&&state.year<7.8){g.strokeStyle='#8fd8e34d';g.lineWidth=12;g.beginPath();g.ellipse(cx,cy,(145+(state.year-7)*100)*scale,90*scale,0,0,Math.PI*2);g.stroke();g.lineWidth=1}
-   if(!state.exploded){const r=Math.max(3,m.radius*scale*state.size),halo=g.createRadialGradient(cx,cy,0,cx,cy,r*2.3);halo.addColorStop(0,state.year>=7.5?'#eefaff':'#ffe2a4');halo.addColorStop(.4,state.year>=4.5&&state.year<7.5?'#ff7146':'#ffba58');halo.addColorStop(1,'#ff7d2500');g.fillStyle=halo;g.beginPath();g.arc(cx,cy,r*2.3,0,Math.PI*2);g.fill();g.fillStyle=state.year>=7.5?'#e9f7ff':state.year>=4.5?'#f77e4a':'#ffdf99';g.beginPath();g.arc(cx,cy,r,0,Math.PI*2);g.fill();points.push({x:cx,y:cy,i:0})}
+   if(!state.exploded){const r=Math.max(3,m.radius*scale*state.size),color=state.year>=7.5?'#b8e8ff':state.year>=4.5?'#ff6138':'#ffb65b';glow(cx,cy,r*4,color);glow(cx,cy,r*2,'#ffc373');g.drawImage(timeSprites[0],cx-r,cy-r,r*2,r*2);g.save();g.globalCompositeOperation='screen';g.fillStyle=color+'44';g.beginPath();g.arc(cx,cy,r,0,Math.PI*2);g.fill();g.restore();if(!reduced){g.save();g.strokeStyle=color+'50';g.lineWidth=Math.max(1,r*.025);for(let j=0;j<9;j++){const a=j*.7+state.clock*.025;g.beginPath();g.ellipse(cx+Math.cos(a)*r*.9,cy+Math.sin(a)*r*.9,r*.22,r*.07,a,0,Math.PI*2);g.stroke()}g.restore()}points.push({x:cx,y:cy,i:0})}
    if(state.civ>0&&!state.exploded){g.fillStyle='#6fffe0';for(let i=0;i<state.civ*14;i++){const a=i*2.4+state.clock*.1,rr=(110+state.civ*25+i%4*9)*scale;g.fillRect(cx+Math.cos(a)*rr,cy+Math.sin(a)*rr*.48,3,3)}}
   }
-  if(state.blast>=0){state.blast+=dt;const t=state.blast;g.strokeStyle=`rgba(255,180,90,${Math.max(0,1-t/3)})`;g.lineWidth=4;g.beginPath();g.arc(cx,cy,10+t*160,0,Math.PI*2);g.stroke();for(let i=0;i<80;i++){const a=i*2.399,r=t*(60+i%17*9);g.fillStyle=`rgba(255,${140+i%100},100,${Math.max(0,1-t/3)})`;g.fillRect(cx+Math.cos(a)*r,cy+Math.sin(a)*r,3,3)}if(t>3)state.blast=-1}
+  if(state.blast>=0){state.blast+=dt;explosion(state.blast,cx,cy,scale);if(state.blast>10)state.blast=-1}
+  g.restore();
+  if(state.scene){const t=state.sceneTime,title=state.scene==='blast'?(t<2?'I · STELLAR RUPTURE':t<6?'II · THE SHOCK FRONT':'III · ECHOES IN THE DARK'):t<5?'I · OUR BLUE HOME':t<10?'II · THE RINGED WORLD':t<16?'III · THE AGEING STAR':'IV · A WHITE DWARF REMAINS';g.fillStyle='#02060dd9';g.fillRect(0,0,width,38);g.fillRect(0,height-48,width,48);g.font='12px Arial';g.fillStyle='#f3d8a6';g.textAlign='left';g.fillText(title,20,24);g.fillStyle='#a6bed9';g.fillText(`${state.scene==='blast'?'FICTIONAL SUPERNOVA':'SOLAR EVOLUTION · ILLUSTRATIVE'}  /  ${t.toFixed(1)} s${state.freeze?' · FROZEN':''}`,20,height-20)}
   frame=requestAnimationFrame(draw);
  }
  el('timeLaunch').onclick=()=>{lab.showModal();resize();last=performance.now();update();if(!frame)frame=requestAnimationFrame(draw)};
@@ -433,16 +467,21 @@ canvas.addEventListener('pointerup',e=>{const start=systemClickStart;systemClick
  el('timeClose').onclick=close;lab.addEventListener('cancel',e=>{e.preventDefault();close()});
  window.addEventListener('keydown',e=>{if(lab.open&&e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close()}},true);
  addEventListener('resize',()=>{if(lab.open)resize()});
- el('timeYear').oninput=e=>{state.year=Number(e.target.value);state.exploded=false;state.blast=-1;update()};
- el('timeJumps').onclick=e=>{if(e.target.dataset.year!==undefined){state.year=Number(e.target.dataset.year);state.exploded=false;state.blast=-1;update()}};
+ el('timeYear').oninput=e=>{stopScene();state.year=Number(e.target.value);state.exploded=false;state.blast=-1;update()};
+ el('timeJumps').onclick=e=>{if(e.target.dataset.year!==undefined){stopScene();state.year=Number(e.target.dataset.year);state.exploded=false;state.blast=-1;update()}};
  el('timePlay').onclick=()=>{if(state.year>=8)state.year=0;state.playing=!state.playing;update()};
  el('timeSize').oninput=e=>{state.size=Number(e.target.value);el('timeSizeValue').textContent=state.size+'× display size (fictional override)'};
  el('timeCiv').onchange=e=>{state.civ=Number(e.target.value);update()};
  el('timeDistance').oninput=e=>{state.distance=Number(e.target.value);el('timeDistanceValue').textContent=state.distance?state.distance.toFixed(1)+' billion light-years · imagined view':'Solar system view';update()};
- el('timeBlast').onclick=()=>{state.exploded=true;state.blast=reduced?-1:0;state.playing=false;el('timeEvent').textContent='Fictional supernova triggered. The Sun would not do this. Use Restore star to return to the timeline.';update()};
- el('timeRestore').onclick=()=>{state.exploded=false;state.blast=-1;el('timeEvent').textContent='Star restored. Real solar evolution ends in a white dwarf, not a supernova.';update()};
+ el('timeBlast').onclick=()=>{startScene('blast');if(reduced)state.blast=-1};
+ el('timeRestore').onclick=()=>{stopScene();state.exploded=false;state.blast=-1;el('timeEvent').textContent='Star restored. Real solar evolution ends in a white dwarf, not a supernova.';update()};
  el('timeReset').onclick=()=>{Object.assign(state,{year:0,playing:false,world:3,size:1,distance:0,civ:0,blast:-1,exploded:false,clock:0});el('timeSize').value=1;el('timeSizeValue').textContent='1× display size';el('timeDistance').value=0;el('timeDistanceValue').textContent='Solar system view';el('timeCiv').value=0;el('timeRate').value='0.1';el('timeEvent').textContent='Reset to today. The Sun will not become a supernova; the explosion is fictional.';update()};
- canvas.onclick=e=>{const box=canvas.getBoundingClientRect(),x=e.clientX-box.left,y=e.clientY-box.top;const p=points.find(p=>Math.hypot(p.x-x,p.y-y)<18);if(p){state.world=p.i;update()}};
+ el('timeCinema').onclick=()=>startScene('tour');
+ el('timeReplay').onclick=()=>{if(state.lastScene){if(sceneSnapshot)Object.assign(state,sceneSnapshot);startScene(state.lastScene)}};
+ el('timeFreeze').onclick=()=>{state.freeze=!state.freeze;el('timeFreeze').textContent=state.freeze?'Resume frames':'Freeze frame';el('timeFreeze').setAttribute('aria-pressed',String(state.freeze))};
+ el('timeWide').onclick=()=>{stopScene();state.focus=false;update()};
+ const resetBase=el('timeReset').onclick;el('timeReset').onclick=()=>{stopScene();state.focus=false;state.freeze=false;state.lastScene=null;sceneSnapshot=null;el('timeReplay').disabled=true;el('timeMotion').value='1';el('timeFreeze').textContent='Freeze frame';el('timeFreeze').setAttribute('aria-pressed','false');resetBase()};
+ canvas.onclick=e=>{const box=canvas.getBoundingClientRect(),x=(e.clientX-box.left-width/2)/camera.zoom+width/2+camera.x,y=(e.clientY-box.top-height/2)/camera.zoom+height/2+camera.y;const p=points.find(p=>Math.hypot(p.x-x,p.y-y)<18);if(p){stopScene();state.world=p.i;state.focus=true;update()}};
  update();
 })();
 </script>
