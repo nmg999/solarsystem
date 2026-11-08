@@ -11,6 +11,10 @@ def science(request):
     return render(request, 'learning/science.html')
 
 
+def django_study(request):
+    return render(request, 'learning/django.html')
+
+
 def solar_system(request):
     return FileResponse(
         (settings.BASE_DIR / 'solar_system.html').open('rb'),

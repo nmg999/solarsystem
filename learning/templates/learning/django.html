@@ -1,0 +1,299 @@
+{% extends 'learning/base.html' %}
+{% block title %}Django Study | Study Hub{% endblock %}
+{% block content %}
+<style>
+  .lesson { margin: 24px 0; scroll-margin-top: 24px; }
+  .lesson p:last-child { margin-bottom: 0; }
+  .lesson pre { background: #14243b; color: #e2edf8; padding: 20px; border-radius: 10px; overflow-x: auto; line-height: 1.6; }
+  .lesson code { font-family: Consolas, monospace; }
+  .lesson-nav { display: flex; flex-wrap: wrap; gap: 10px 20px; margin: 24px 0; }
+  .lesson-nav a { color: #27634d; font-weight: 650; }
+  .example { border-left: 3px solid #70a78e; padding-left: 16px; }
+  .lesson summary { cursor: pointer; color: #27634d; }
+  .lesson summary h2 { display: inline; font-size: 1.2rem; }
+  .lesson summary:focus-visible, .lesson-actions button:focus-visible { outline: 3px solid #b97512; outline-offset: 6px; }
+  .lesson[open] summary { border-bottom: 1px solid #dce4ee; padding-bottom: 16px; }
+  .lesson-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+  .lesson-actions button { padding: 10px 16px; border: 1px solid #27634d; border-radius: 8px; background: white; color: #27634d; cursor: pointer; font: inherit; }
+</style>
+<p class="eyebrow">Your first steps in web development</p>
+<h1>Django Study</h1>
+<p class="intro">Discover how the pieces of a website fit together, using your own Study Hub and solar system as examples.</p>
+<p>Click a question to open its lesson. You can open several lessons at once, or use the topic links to jump straight to one.</p>
+<div class="lesson-actions"><button type="button" id="lessons-open">Show all lessons</button> <button type="button" id="lessons-close">Collapse all lessons</button></div>
+<nav class="lesson-nav" aria-label="Jump to a lesson">
+  <a href="#django">Django</a><a href="#html">HTML</a><a href="#css">CSS</a><a href="#javascript">JavaScript</a><a href="#database">Databases</a><a href="#api">APIs</a><a href="#models">models.py</a><a href="#views">views.py</a><a href="#urls">urls.py</a>
+  <a href="#venv">.venv</a><a href="#gitignore">.gitignore</a><a href="#requirements">requirements.txt</a>
+  <a href="#manage">manage.py</a><a href="#routing-folders">Project vs app URLs</a><a href="#init">__init__.py</a><a href="#settings">settings.py</a><a href="#migrations">Migrations</a>
+</nav>
+
+<details class="card lesson" id="django" aria-labelledby="django-heading" open>
+  <summary><h2 id="django-heading">What does Django do?</h2></summary>
+  <div class="lesson-body">
+  <p><strong>Django is a Python framework for building websites.</strong> A framework provides useful tools and a structure so you do not have to build everything from scratch. Django runs on a server, the computer that responds to requests from your browser.</p>
+  <p>In this project, <code>config</code> holds the site settings and <code>learning</code> is the app containing your study pages. A <strong>URL route</strong> matches an address, a <strong>view</strong> is the Python function that handles the request, and a <strong>template</strong> supplies the HTML for a page.</p>
+  <p class="example">When you open <code>/science/</code>, Django finds its route, calls the Science view, and renders the Science Study template. Your browser displays the result.</p>
+</div>
+</details>
+
+<details class="card lesson" id="html" aria-labelledby="html-heading">
+  <summary><h2 id="html-heading">What does HTML do?</h2></summary>
+  <div class="lesson-body">
+  <p><strong>HTML defines the content and structure of a web page.</strong> It stands for HyperText Markup Language. Tags describe headings, paragraphs, links, images, forms, and other page elements.</p>
+  <pre><code>&lt;h1&gt;Study Hub&lt;/h1&gt;
+&lt;p&gt;Choose a subject to explore.&lt;/p&gt;
+&lt;a href="/science/"&gt;Science&lt;/a&gt;</code></pre>
+  <p><code>&lt;h1&gt;</code> marks a main heading, <code>&lt;p&gt;</code> marks a paragraph, and <code>&lt;a&gt;</code> creates a link. The link's <code>href</code> tells the browser where to go.</p>
+  <p class="example">Your Study Hub templates use HTML for the subject cards. Your solar system uses an HTML <code>&lt;canvas&gt;</code> element as a drawing surface for the planets.</p>
+</div>
+</details>
+
+<details class="card lesson" id="css" aria-labelledby="css-heading">
+  <summary><h2 id="css-heading">What does CSS do?</h2></summary>
+  <div class="lesson-body">
+  <p><strong>CSS controls how a page looks and how its elements are arranged.</strong> It stands for Cascading Style Sheets. CSS sets colours, fonts, spacing, borders, and layouts, including layouts that adapt to phone screens.</p>
+  <pre><code>h1 {
+  color: blue;
+  font-size: 40px;
+}</code></pre>
+  <p>This rule selects <code>h1</code> headings and makes their text blue and 40 pixels tall.</p>
+  <p class="example">Study Hub's shared <code>base.html</code> template includes CSS that styles the cards and green buttons. In your solar system, CSS styles the information panels, controls, and quiz.</p>
+</div>
+</details>
+
+<details class="card lesson" id="javascript" aria-labelledby="javascript-heading">
+  <summary><h2 id="javascript-heading">What does JavaScript do?</h2></summary>
+  <div class="lesson-body">
+  <p><strong>JavaScript adds behaviour and interactivity.</strong> In your website it runs in the browser, responds to clicks and other events, changes page content, and draws animations.</p>
+  <pre><code>&lt;button id="greet"&gt;Say hello&lt;/button&gt;
+&lt;p id="message"&gt;&lt;/p&gt;
+&lt;script&gt;
+  document.getElementById('greet').addEventListener('click', () =&gt; {
+    document.getElementById('message').textContent = 'Hello, explorer!';
+  });
+&lt;/script&gt;</code></pre>
+  <p>This example finds the button, listens for a click, and then changes the paragraph's text.</p>
+  <p class="example">In <code>solar_system.html</code>, JavaScript draws the detailed planets, animates their orbits, displays planet facts, scores your quiz, and controls time travel and cinematic effects.</p>
+</div>
+</details>
+
+<details class="card lesson" id="database" aria-labelledby="database-heading">
+  <summary><h2 id="database-heading">What is a database?</h2></summary>
+  <div class="lesson-body">
+  <p><strong>A database stores information so an application can retrieve, change, or delete it later.</strong> In a relational database, information is organised into tables with rows and columns. Each row is a record, such as one learner or one quiz attempt.</p>
+  <p>Django can describe stored data using Python classes called <strong>models</strong>. Commands called <strong>migrations</strong> create or update the corresponding database structure.</p>
+  <p class="example">Your project uses SQLite, which stores its database in <code>db.sqlite3</code>. A future quiz-results table could store a learner, their score, and when they took the quiz.</p>
+  <p>Your current solar system quiz calculates scores in the browser. It does not save quiz attempts to the database, so reloading the page clears that result.</p>
+</div>
+</details>
+
+<details class="card lesson" id="api" aria-labelledby="api-heading">
+  <summary><h2 id="api-heading">What is an API?</h2></summary>
+  <div class="lesson-body">
+  <p><strong>An API is an agreed way for software to communicate.</strong> It stands for Application Programming Interface. An API describes the operations a program can use and the information it receives back.</p>
+  <p>A <strong>web API</strong> lets a program send a request to an address, called an endpoint, and receive data. That data often uses <strong>JSON</strong>, a text format for named values and lists.</p>
+  <pre><code>GET /api/planets/mars/
+
+Example JSON response:
+{
+  "name": "Mars",
+  "nickname": "The red planet",
+  "orbital_period_earth_days": 687
+}</code></pre>
+  <p class="example">This is an imagined endpoint, not one currently built into your site. In a future version, JavaScript could request planet information from a Django API and display the response without reloading the page. Your current planet information is embedded in the solar system file.</p>
+  <p>Not every API uses the internet: your JavaScript also uses the browser's Canvas API to draw planets and effects.</p>
+</div>
+</details>
+
+<details class="card lesson" id="models" aria-labelledby="models-heading">
+  <summary><h2 id="models-heading">What does models.py do?</h2></summary>
+  <div class="lesson-body">
+  <p><strong><code>models.py</code> describes the information your app stores in its database.</strong> A model is a Python class representing a type of record. Its fields describe the pieces of information to store, such as a planet's name or a quiz score.</p>
+  <pre><code>from django.db import models
+
+class Planet(models.Model):
+    name = models.CharField(max_length=100)
+    orbital_period_days = models.FloatField()</code></pre>
+  <p>In this example, <code>Planet</code> describes planet records. <code>CharField</code> stores text and <code>FloatField</code> stores a number that can include decimals. Django can use this class to create, find, update, and delete records without you writing database queries by hand.</p>
+  <p class="example">Your <code>learning/models.py</code> currently has no custom models. This Planet model is an example, not a model already added to your project. Your planet facts currently live in <code>solar_system.html</code>.</p>
+  <p>After adding or changing a model, you normally run <code>python manage.py makemigrations</code> to describe the database changes, then <code>python manage.py migrate</code> to apply them.</p>
+</div>
+</details>
+
+<details class="card lesson" id="views" aria-labelledby="views-heading">
+  <summary><h2 id="views-heading">What does views.py do?</h2></summary>
+  <div class="lesson-body">
+  <p><strong><code>views.py</code> contains the Python code that handles requests and returns responses.</strong> A request is what your browser asks for; a response is what Django sends back. A view can read database records, process submitted information, and choose a template to display.</p>
+  <pre><code>from django.shortcuts import render
+
+def science(request):
+    return render(request, 'learning/science.html')</code></pre>
+  <p>This is the Science view in your project. <code>request</code> contains information about the incoming request. <code>render</code> uses the HTML template to build a response for the browser.</p>
+  <p class="example">Your <code>learning/views.py</code> has views for Study Hub, Science Study, and Django Study. Its <code>solar_system</code> view returns the existing solar system HTML file with <code>FileResponse</code>, which sends a file as the response.</p>
+</div>
+</details>
+
+<details class="card lesson" id="urls" aria-labelledby="urls-heading">
+  <summary><h2 id="urls-heading">What does urls.py do?</h2></summary>
+  <div class="lesson-body">
+  <p><strong><code>urls.py</code> connects website addresses to views.</strong> Each URL pattern is a route. Django checks the routes to find the view that should handle an incoming address.</p>
+  <pre><code>from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('science/', views.science, name='science'),
+]</code></pre>
+  <p>This route connects <code>/science/</code> to the <code>science</code> function in <code>views.py</code>. The name <code>science</code> lets Django build links to the route without repeating its address throughout your templates.</p>
+  <p class="example">Your <code>config/urls.py</code> is the main routing file. It uses <code>include</code> to pass Study Hub's routes to <code>learning/urls.py</code>, where the home, Science, solar system, and Django Study addresses are defined.</p>
+  <p><strong>Follow a request:</strong> opening <code>/science/</code> matches a route in <code>urls.py</code>, calls the function in <code>views.py</code>, and returns the Science HTML template. A view can also use models from <code>models.py</code> when it needs stored data.</p>
+</div>
+</details>
+
+<details class="card lesson" id="venv" aria-labelledby="venv-heading">
+  <summary><h2 id="venv-heading">What does .venv do?</h2></summary>
+  <div class="lesson-body">
+  <p><strong><code>.venv</code> is a virtual environment: a folder that keeps this project's Python setup and installed packages separate from other projects.</strong> Different projects can use different package versions without interfering with each other.</p>
+  <p>In this repository, <code>.venv</code> uses Python 3.14.10 and contains Django. Activating the environment makes commands such as <code>python</code> and <code>pip</code> use this project's environment in your current terminal.</p>
+  <pre><code># Activate in Windows PowerShell:
+.\.venv\Scripts\Activate.ps1
+
+# Check Django after activation:
+python -m django --version
+
+# Leave the environment:
+deactivate</code></pre>
+  <p>If PowerShell blocks activation scripts, run <code>Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass</code> first. That setting lasts only for the current PowerShell session.</p>
+  <p class="example">You can also use the environment directly without activating it: <code>.\.venv\Scripts\python.exe manage.py runserver 8080</code>. Each developer normally creates their own environment rather than uploading the <code>.venv</code> folder to GitHub.</p>
+</div>
+</details>
+
+<details class="card lesson" id="gitignore" aria-labelledby="gitignore-heading">
+  <summary><h2 id="gitignore-heading">What does .gitignore do?</h2></summary>
+  <div class="lesson-body">
+  <p><strong><code>.gitignore</code> tells Git which untracked files and folders to leave out of version control.</strong> Git tracks changes to your project; GitHub hosts the commits you push. Ignoring generated or computer-specific files keeps unnecessary files out of those commits.</p>
+  <pre><code>.venv/
+__pycache__/
+*.py[cod]
+db.sqlite3</code></pre>
+  <p>These entries are in your repository. They ignore the virtual environment, Python cache folders and compiled files, and the local SQLite database. A trailing slash marks a folder; <code>*</code> matches a pattern.</p>
+  <p class="example">Your source files, templates, and <code>requirements.txt</code> can be committed while your local packages and database stay on your computer.</p>
+  <p>Adding a file to <code>.gitignore</code> does not delete it or stop tracking it if it was already committed. It also does not remove information from earlier commits or encrypt private data.</p>
+</div>
+</details>
+
+<details class="card lesson" id="requirements" aria-labelledby="requirements-heading">
+  <summary><h2 id="requirements-heading">What does requirements.txt do?</h2></summary>
+  <div class="lesson-body">
+  <p><strong><code>requirements.txt</code> lists Python packages to install for the project.</strong> It helps another developer or your hosting service install the dependencies your code needs.</p>
+  <pre><code>Django==5.2.19</code></pre>
+  <p>This is the current entry in your file. <code>==</code> pins an exact version, so this requirement installs Django 5.2.19 rather than choosing a different release.</p>
+  <pre><code># Install the listed packages into this project's environment:
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt</code></pre>
+  <p>The <code>-r</code> option tells pip, Python's package installer, to read the package list from the file. Django's own dependencies are installed automatically; this file currently pins only Django, not every dependency.</p>
+  <p class="example">Together, these three pieces make setup repeatable: commit <code>requirements.txt</code>, ignore <code>.venv/</code>, and install the listed packages inside a new virtual environment on each computer. The requirements file lists packages; it does not install Python itself.</p>
+</div>
+</details>
+
+<details class="card lesson" id="manage" aria-labelledby="manage-heading">
+  <summary><h2 id="manage-heading">What does manage.py do?</h2></summary>
+  <div class="lesson-body">
+  <p><strong><code>manage.py</code> lets you run Django commands for this project from your terminal.</strong> It tells Django which settings module to use, then passes your command to Django's command-line tools.</p>
+  <pre><code># Start the local development server:
+.\.venv\Scripts\python.exe manage.py runserver 8080
+
+# Check the project for common configuration problems:
+.\.venv\Scripts\python.exe manage.py check
+
+# Apply database migrations:
+.\.venv\Scripts\python.exe manage.py migrate</code></pre>
+  <p class="example">Your <code>manage.py</code> points Django to <code>config.settings</code>. Run these commands from the repository folder containing <code>manage.py</code>. You normally use this file as generated rather than adding your page code to it.</p>
+</div>
+</details>
+
+<details class="card lesson" id="routing-folders" aria-labelledby="routing-folders-heading">
+  <summary><h2 id="routing-folders-heading">What's the difference between urls.py in the project folder and urls.py in the app folder?</h2></summary>
+  <div class="lesson-body">
+  <p><strong>The project's URL file organises routes for the whole website. The app's URL file organises routes belonging to that app.</strong> Splitting them keeps related pages together and makes it easier to add more apps later.</p>
+  <pre><code># config/urls.py — project routing:
+from django.urls import include, path
+
+urlpatterns = [
+    path('', include('learning.urls')),
+]
+
+# learning/urls.py — app routing:
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('science/', views.science, name='science'),
+]</code></pre>
+  <p class="example">These excerpts show how your study routes connect. Your complete project URL file also includes the admin route. The empty prefix <code>''</code> passes matching addresses to <code>learning.urls</code> without adding another path segment, so the Science address is <code>/science/</code>.</p>
+  <p>If the project used <code>path('study/', include('learning.urls'))</code> instead, that app's Science address would become <code>/study/science/</code>. Django removes the matched project prefix before checking the app's patterns. An app URL file is a useful convention, not a requirement for every Django app.</p>
+</div>
+</details>
+
+<details class="card lesson" id="init" aria-labelledby="init-heading">
+  <summary><h2 id="init-heading">Why do we see __init__.py in many folders?</h2></summary>
+  <div class="lesson-body">
+  <p><strong><code>__init__.py</code> marks a folder as a regular Python package.</strong> A package groups related Python modules, which are usually individual <code>.py</code> files, so other code can import them.</p>
+  <p class="example">Your <code>config/__init__.py</code> makes <code>config</code> a regular package, and <code>learning/__init__.py</code> does the same for the app. The file in <code>learning/migrations/</code> makes that folder a regular package too. They can be empty and still do their job.</p>
+  <p>Python executes a package's <code>__init__.py</code> when it first imports that package in a process. You usually leave these generated files empty unless the package needs setup code. Some Python packages, called namespace packages, can work without this file, so not every folder needs one.</p>
+</div>
+</details>
+
+<details class="card lesson" id="settings" aria-labelledby="settings-heading">
+  <summary><h2 id="settings-heading">What does settings.py do?</h2></summary>
+  <div class="lesson-body">
+  <p><strong><code>settings.py</code> configures how your Django project runs.</strong> Your file is <code>config/settings.py</code>. It contains Python values that Django reads to decide which apps, databases, templates, and other services to use.</p>
+  <p><code>INSTALLED_APPS</code> registers apps such as <code>learning</code>. <code>DATABASES</code> chooses the database, currently SQLite in your local project. <code>TEMPLATES</code> controls where Django looks for HTML templates, and <code>ROOT_URLCONF</code> selects the main URL module.</p>
+  <p><code>ALLOWED_HOSTS</code> lists hostnames Django accepts. <code>DEBUG</code> controls detailed development error pages. <code>SECRET_KEY</code> is used for cryptographic signing, such as signing session data; it is not your database password.</p>
+  <p class="example">Your settings register <code>learning</code> so Django can find its templates. They also allow your local and configured Vercel hostnames. Production settings should disable debug pages and use a stable, private secret key supplied through the hosting environment.</p>
+</div>
+</details>
+
+<details class="card lesson" id="migrations" aria-labelledby="migrations-heading">
+  <summary><h2 id="migrations-heading">What does the migrations folder in the app folder do?</h2></summary>
+  <div class="lesson-body">
+  <p><strong>The <code>migrations</code> folder stores a versioned history of changes to your app's database structure.</strong> Migration files describe operations such as creating a table or adding a field. Some migrations also change stored data.</p>
+  <pre><code># Create migration files from model changes:
+.\.venv\Scripts\python.exe manage.py makemigrations
+
+# Apply pending migrations to the configured database:
+.\.venv\Scripts\python.exe manage.py migrate
+
+# See which migrations have been applied:
+.\.venv\Scripts\python.exe manage.py showmigrations</code></pre>
+  <p><code>makemigrations</code> compares your models with the state recorded in migration files; it does not directly compare them with your live database. <code>migrate</code> then applies the required changes and records which migrations have run.</p>
+  <p class="example">Your <code>learning/migrations/</code> currently contains only <code>__init__.py</code> because the app has no custom models yet. Django's built-in apps have their own migrations, which created tables for features such as users and sessions when you ran <code>migrate</code>.</p>
+  <p>Migration files should normally be committed to Git so other computers and deployments can apply the same changes. They describe changes; they are not database backups. Avoid deleting applied migrations just to clear an error.</p>
+</div>
+</details>
+
+<details class="card lesson" aria-labelledby="together-heading">
+  <summary><h2 id="together-heading">How they work together</h2></summary>
+  <div class="lesson-body">
+  <p>Your browser requests a page. Django handles the request and can read information from a database. It sends back HTML, which the browser displays with CSS styling. JavaScript then responds to your actions and can request more data through a web API.</p>
+  <p><strong>Try it:</strong> open Science, launch the solar system, and take the quiz. Identify the HTML buttons, their CSS appearance, and the JavaScript that responds when you select an answer.</p>
+  <a class="button" href="{% url 'learning:science' %}">Explore the Science example</a>
+</div>
+</details>
+<a class="button" href="{% url 'learning:home' %}">Back to Study Hub</a>
+<script>
+(() => {
+  const lessons = [...document.querySelectorAll('details.lesson')];
+  document.getElementById('lessons-open').onclick = () => lessons.forEach(lesson => { lesson.open = true; });
+  document.getElementById('lessons-close').onclick = () => lessons.forEach(lesson => { lesson.open = false; });
+  function openTopic() {
+    const lesson = lessons.find(item => item.id && '#' + item.id === location.hash);
+    if (lesson) { lesson.open = true; lesson.scrollIntoView({block: 'start'}); }
+  }
+  document.querySelectorAll('.lesson-nav a').forEach(link => link.addEventListener('click', () => {
+    const lesson = lessons.find(item => '#' + item.id === link.hash);
+    if (lesson) lesson.open = true;
+  }));
+  addEventListener('hashchange', openTopic);
+  openTopic();
+})();
+</script>
+{% endblock %}
