@@ -7,4 +7,5 @@ app_name = 'learning'
 urlpatterns = [
     path('', views.home, name='home'),
     path('science/', views.science, name='science'),
+    path('science/solar-system/', views.solar_system, name='solar_system'),
 ]

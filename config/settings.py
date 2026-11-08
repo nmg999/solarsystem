@@ -36,6 +36,11 @@ ALLOWED_HOSTS = [
     'solarsystem-p111.vercel.app',
 ]
 
+# Vercel supplies the hostname for each deployment and preview.
+for variable in ('VERCEL_URL', 'VERCEL_PROJECT_PRODUCTION_URL'):
+    if hostname := os.environ.get(variable):
+        ALLOWED_HOSTS.append(hostname)
+
 
 # Application definition
 
