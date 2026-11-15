@@ -20,10 +20,34 @@
     a:focus-visible { outline: 3px solid #b97512; outline-offset: 5px; }
     .button:hover { background: #194b39; }
     .soon { color: #64748b; font-size: .9rem; }
+    header { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+    .account-nav { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; font-size: .9rem; }
+    .account-nav form { margin: 0; }
+    button.button { font: inherit; border: 0; cursor: pointer; }
+    .account-nav a.button { color: white; }
+    button:focus-visible, input:focus-visible { outline: 3px solid #b97512; outline-offset: 4px; }
+    .auth-card { max-width: 520px; margin: 0 auto 40px; }
+    .auth-card h1 { font-size: 2.4rem; }
+    .auth-card label { display: block; font-weight: 650; margin: 18px 0 6px; }
+    .auth-card input { width: 100%; padding: 12px; border: 1px solid #a8b6c8; border-radius: 8px; font: inherit; }
+    .auth-card .helptext { display: block; font-size: .85rem; color: #526078; margin-top: 6px; }
+    .auth-card .errorlist { color: #9c2632; padding-left: 20px; }
+    .auth-card a { color: #27634d; }
   </style>
 </head>
 <body>
-  <header><a href="{% url 'learning:home' %}">Study Hub</a></header>
+  <header>
+    <a href="{% url 'learning:home' %}">Study Hub</a>
+    <nav class="account-nav" aria-label="Account">
+      {% if user.is_authenticated %}
+        <span>Hi, {{ user.username }}</span>
+        <form method="post" action="{% url 'learning:logout' %}">{% csrf_token %}<button class="button" type="submit">Log out</button></form>
+      {% else %}
+        <a href="{% url 'learning:login' %}">Log in</a>
+        <a class="button" href="{% url 'learning:signup' %}">Sign up</a>
+      {% endif %}
+    </nav>
+  </header>
   <main>{% block content %}{% endblock %}</main>
 </body>
 </html>
